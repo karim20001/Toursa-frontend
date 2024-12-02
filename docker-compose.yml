@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  backend:
+    build:
+      context: ../../Tour/tour  # Path to your Django project directory
+    container_name: backend
+    ports:
+      - "8000:8000"  # Expose backend port
+    environment:
+      - DJANGO_DEBUG=True
+      - DJANGO_ALLOWED_HOSTS=localhost
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Expose React app on port 3000
+    volumes:
+      - .:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # For hot-reloading in some environments
+
+    depends_on:
+      - backend # Optional, if the frontend depends on the Django API (backend)
+
+networks:
+  mynetwork:
+    driver: bridge
